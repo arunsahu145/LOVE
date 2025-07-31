@@ -263,7 +263,7 @@
   <!-- I LOVE YOU Page -->
   <section id="iloveyou">
     <div class="big-love-text" id="big-love-text">I LOVE YOU ❤️</div>
-    <button class="restart-button" id="restart-btn" onclick="showPage('cover'); stopMusic()">Restart Our Journey</button>
+    <button class="restart-button" id="restart-btn" onclick="restartJourney()">Restart Our Journey</button>
   </section>
 
   <!-- Background Music -->
@@ -286,6 +286,29 @@
       music.pause();
       music.currentTime = 0;
     }
+    function restartJourney(){
+      stopMusic();
+      // Reset images
+      document.getElementById('left-img').classList.remove('visible');
+      document.getElementById('right-img').classList.remove('visible');
+      document.getElementById('magic-heart').classList.remove('pop');
+
+      // Reset envelope
+      document.getElementById('envelope').classList.remove('open');
+      const letterText = document.getElementById('letter-text');
+      letterText.classList.remove('visible');
+      letterText.innerHTML = "";
+
+      // Reset I LOVE YOU page
+      const loveText = document.getElementById('big-love-text');
+      const restartBtn = document.getElementById('restart-btn');
+      loveText.classList.remove('show');
+      restartBtn.style.display = 'none';
+
+      // Go to cover
+      showPage('cover');
+    }
+
     // Floating hearts
     function createHeart(){ 
       const heart = document.createElement('div'); 
@@ -359,7 +382,6 @@
       setTimeout(() => {
         letterText.classList.add('visible');
         typeWriterEffect(fullText, letterText, () => {
-          // After text finishes, wait 2s then go to I LOVE YOU page
           setTimeout(()=> showPage('iloveyou'), 2000);
         });
       }, 800); 
@@ -388,5 +410,6 @@
       setTimeout(()=> { restartBtn.style.display = 'block'; }, 3000);
     }
   </script>
+
 </body>
 </html>
