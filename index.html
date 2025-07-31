@@ -276,11 +276,15 @@
       document.getElementById('bg-music').play();
       showPage('page1');
     }
+
+    // Updated to scroll to top on page change
     function showPage(id){
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' }); // Always go to top
       if(id === 'iloveyou'){ fadeInLove(); }
     }
+
     function stopMusic(){
       const music = document.getElementById('bg-music');
       music.pause();
@@ -333,43 +337,37 @@
     }
 
     function heartBurst(heart){
-      const container = document.getElementById('surprise-frame');
-      for (let i = 0; i < 12; i++) {
-        const smallHeart = document.createElement('div');
-        smallHeart.classList.add('burst-heart');
-        smallHeart.innerHTML = '❤';
-        smallHeart.style.left = heart.offsetLeft + 30 + 'px';
-        smallHeart.style.top = heart.offsetTop + 'px';
-        const angle = (i / 12) * 2 * Math.PI;
-        const distance = 80 + Math.random()*40;
-        smallHeart.style.setProperty('--x', `${Math.cos(angle)*distance}px`);
-        smallHeart.style.setProperty('--y', `${Math.sin(angle)*distance}px`);
-        container.appendChild(smallHeart);
-        setTimeout(() => smallHeart.remove(), 1000);
+      const container = heart.parentElement;
+      for(let i=0;i<8;i++){
+        const burst = document.createElement('div');
+        burst.classList.add('burst-heart');
+        burst.innerHTML = '❤';
+        burst.style.setProperty('--x', `${(Math.random()-0.5)*200}px`);
+        burst.style.setProperty('--y', `${(Math.random()-0.5)*200}px`);
+        burst.style.left = heart.offsetLeft + 20 + 'px';
+        burst.style.top = heart.offsetTop + 20 + 'px';
+        container.appendChild(burst);
+        setTimeout(()=>burst.remove(),1000);
       }
     }
 
     function sparkleBurst(heart){
-      const container = document.getElementById('surprise-frame');
-      for (let i = 0; i < 20; i++) {
+      const container = heart.parentElement;
+      for(let i=0;i<15;i++){
         const sparkle = document.createElement('div');
         sparkle.classList.add('sparkle');
-        sparkle.style.left = heart.offsetLeft + 30 + 'px';
-        sparkle.style.top = heart.offsetTop + 'px';
-        const angle = (i / 20) * 2 * Math.PI;
-        const distance = 100 + Math.random()*50;
-        sparkle.style.setProperty('--x', `${Math.cos(angle)*distance}px`);
-        sparkle.style.setProperty('--y', `${Math.sin(angle)*distance}px`);
+        sparkle.style.setProperty('--x', `${(Math.random()-0.5)*250}px`);
+        sparkle.style.setProperty('--y', `${(Math.random()-0.5)*250}px`);
+        sparkle.style.left = heart.offsetLeft + 25 + 'px';
+        sparkle.style.top = heart.offsetTop + 25 + 'px';
         container.appendChild(sparkle);
-        setTimeout(() => sparkle.remove(), 1200);
+        setTimeout(()=>sparkle.remove(),1200);
       }
     }
 
-    // Envelope click to reveal letter
-    const envelope = document.getElementById('envelope');
-    const letterText = document.getElementById('letter-text');
-    const fullText = 
-      "My LOVE,\n\n" +
+    // Love letter typing effect
+    const letterContent = 
+"My LOVE,\n\n" +
       "From the moment you walked into my life, everything changed for the better. " +
       "Every smile, every laugh, and every little moment with you has made my world more beautiful.\n\n" +
       "You are my safe place, my happiest memory, and my greatest adventure.\n\n" +
@@ -377,39 +375,33 @@
       "I promise to love you endlessly.\n\n" +
       "Forever yours,\nYour Bubuuu ❤️";
 
-    envelope.addEventListener('click', () => {
+    document.getElementById('envelope-container').addEventListener('click',()=>{
+      const envelope = document.getElementById('envelope');
+      const letterText = document.getElementById('letter-text');
       envelope.classList.add('open');
-      setTimeout(() => {
+      setTimeout(()=>{
         letterText.classList.add('visible');
-        typeWriterEffect(fullText, letterText, () => {
-          setTimeout(()=> showPage('iloveyou'), 2000);
-        });
-      }, 800); 
-    });
-
-    function typeWriterEffect(text, element, callback) {
-      element.innerHTML = "";
-      let i = 0;
-      function typing() {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-          setTimeout(typing, 50);
-        } else if(callback) {
-          callback();
+        let index = 0;
+        function typeLetter(){
+          if(index < letterContent.length){
+            letterText.innerHTML += letterContent.charAt(index);
+            index++;
+            setTimeout(typeLetter, 40);
+          } else {
+            setTimeout(()=>showPage('iloveyou'), 1500);
+          }
         }
-      }
-      typing();
-    }
+        typeLetter();
+      },800);
+    });
 
     // Fade in I LOVE YOU text
     function fadeInLove(){
-      const loveText = document.getElementById('big-love-text');
-      const restartBtn = document.getElementById('restart-btn');
-      setTimeout(()=> { loveText.classList.add('show'); }, 500);
-      setTimeout(()=> { restartBtn.style.display = 'block'; }, 3000);
+      const text = document.getElementById('big-love-text');
+      const btn = document.getElementById('restart-btn');
+      setTimeout(()=> text.classList.add('show'), 500);
+      setTimeout(()=> btn.style.display = 'block', 2500);
     }
   </script>
-
 </body>
 </html>
