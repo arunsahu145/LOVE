@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Journey ❤️</title>
+  <style>
+    body { 
+      margin:0; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #ffb6c1, #ff4d6d); 
+      min-height:100vh; 
+      display:flex; 
+      flex-direction:column; 
+      align-items:center; 
+      justify-content:center; 
+      transition: background 0.5s ease; 
+      overflow-x:hidden; 
+    }
+    section { display:none; width:100%; max-width:1000px; text-align:center; position:relative; z-index:2; }
+    section.active { display:block; animation: fadeIn 0.8s ease-in; }
+    h1 { color:white; font-size:42px; text-shadow:2px 2px 8px rgba(0,0,0,0.3); margin:20px 0; }
+    h3 { color:white; font-size:20px; margin-bottom:20px; }
+
+    /* Cover page */
+    .polaroid { background:white; padding:10px 10px 40px 10px; box-shadow:0 4px 15px rgba(0,0,0,0.3); transform:rotate(-3deg); width:300px; text-align:center; margin:auto; }
+    .polaroid img { width:100%; }
+    .caption { margin-top:10px; font-size:18px; color:#444; }
+    .start-button { background:white; border:none; padding:15px 40px; font-size:20px; border-radius:15px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin-top:20px; transition:all 0.3s ease; }
+    .start-button:hover { transform:scale(1.1); background:#ffe6eb; }
+
+    /* Album pages */
+    .album-page { display:flex; flex-wrap:wrap; gap:20px; justify-content:center;width: 100%; }
+    .polaroid-small { background:white; padding:10px 10px 40px 10px; box-shadow:0 4px 15px rgba(0,0,0,0.3); transform:rotate(-2deg); text-align:center; transition:transform 0.3s ease; width:200px;}
+    .polaroid-small:nth-child(odd) { transform:rotate(3deg); }
+    .polaroid-small:hover { transform:scale(1.05) rotate(0deg); }
+    .polaroid-small img { width:100%; height:200px; object-fit:cover; }
+    .caption-small { margin-top:10px; font-size:16px; color:#444; }
+
+    /* Surprise page */
+    .surprise-frame {
+      display:flex; 
+      justify-content:center; 
+      align-items:center;
+      gap:20px;
+      width:90%;
+      max-width:1000px;
+      margin:auto;
+      border:8px solid white;
+      padding:20px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.4);
+      background:white;
+      border-radius:12px;
+      position:relative;
+      overflow:hidden;
+    }
+    .surprise-frame img {
+      width:45%;
+      height:500px;
+      object-fit:cover;
+      border-radius:8px;
+      opacity:0;
+      transform:scale(0.9);
+      transition: opacity 2.5s ease, transform 2.5s ease;
+    }
+    .surprise-frame img.visible {
+      opacity:1;
+      transform:scale(1);
+    }
+    .heart-divider {
+      font-size: 60px;
+      color: #ff4d6d;
+      animation: pulse 1.5s infinite;
+      cursor:pointer;
+      transition: transform 0.3s ease;
+      position:relative;
+      z-index:3;
+    }
+    .heart-divider:hover { transform: scale(1.3); }
+    .heart-divider.pop { animation: pop 0.6s ease forwards; }
+    @keyframes pop { 
+      0% { transform: scale(1); } 
+      50% { transform: scale(1.8); } 
+      100% { transform: scale(1); } 
+    }
+
+    /* Burst hearts */
+    .burst-heart {
+      position:absolute;
+      color:#ff4d6d;
+      font-size:20px;
+      animation: burst 1s ease-out forwards;
+    }
+    @keyframes burst {
+      0% { opacity:1; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--x), var(--y)) scale(0.3); }
+    }
+
+    /* Sparkles */
+    .sparkle {
+      position:absolute;
+      width:8px;
+      height:8px;
+      background:white;
+      border-radius:50%;
+      box-shadow:0 0 8px white;
+      animation: sparkle 1.2s ease-out forwards;
+      pointer-events:none;
+    }
+    @keyframes sparkle {
+      0% { opacity:1; transform:scale(0.5) translate(0,0); }
+      100% { opacity:0; transform:scale(0) translate(var(--x), var(--y)); }
+    }
+
+    .final-message { margin-top:20px; color:white; font-size:28px; text-shadow:2px 2px 8px rgba(0,0,0,0.4); }
+
+    /* Envelope for Love Letter */
+    .envelope-container { display:flex; justify-content:center; align-items:center; flex-direction:column; cursor:pointer; margin-top:40px; }
+    .envelope { width:280px; height:180px; background:#fff; position:relative; border:2px solid #ff4d6d; border-radius:8px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.3); transition:transform 0.5s ease; animation: bounce 2s infinite; }
+    .envelope:hover { transform:scale(1.05); }
+    .flap { position:absolute; top:0; left:0; width:100%; height:100%; background: #ff4d6d; clip-path: polygon(0 0, 50% 50%, 100% 0); transition: transform 0.8s ease; transform-origin: top; }
+    .envelope.open .flap { transform: rotateX(180deg); }
+    @keyframes bounce { 0%, 100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+
+    /* Love letter text */
+    .love-letter { background:white; padding:30px; border-radius:15px; box-shadow:0 6px 20px rgba(0,0,0,0.3); max-width:800px; margin:30px auto 0; font-size:20px; color:#444; line-height:1.8; text-align:left; display:none; white-space:pre-wrap; }
+    .love-letter.visible { display:block; animation: fadeIn 1s ease forwards; }
+
+    /* I LOVE YOU Page */
+    #iloveyou { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .big-love-text { 
+      font-size:80px; 
+      font-weight:bold; 
+      color:white; 
+      text-shadow:0 0 20px #ff4d6d,0 0 40px #ff1a4d; 
+      opacity:0; 
+      transform:scale(0.8);
+      transition:opacity 2s ease, transform 2s ease;
+    }
+    .big-love-text.show { 
+      opacity:1; 
+      transform:scale(1);
+    }
+    .restart-button { margin-top:40px; background:white; border:none; padding:15px 40px; font-size:20px; border-radius:15px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3); display:none; transition:all 0.3s ease; }
+    .restart-button:hover { background:#ffe6eb; transform:scale(1.1); }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .nav-buttons button {
+      background:white; 
+      border:none; 
+      padding:15px 40px; 
+      font-size:20px; 
+      border-radius:15px; 
+      cursor:pointer; 
+      box-shadow:0 4px 12px rgba(0,0,0,0.3); 
+      transition:all .3s;
+    }
+    .nav-buttons button:hover { background:#ffe6eb; transform:scale(1.05); }
+
+    /* Floating hearts */
+    .floating-hearts { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; overflow:hidden; }
+    .heart { position:absolute; color:rgba(255,255,255,0.7); font-size:24px; animation:float 8s infinite ease-in; }
+    @keyframes float { 0%{transform:translateY(100vh) scale(0.5); opacity:1;} 100%{transform:translateY(-10vh) scale(1.2); opacity:0;} }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    @keyframes pulse { 0%, 100% { transform:scale(1); } 50% { transform:scale(1.3); } }
+
+    /* Responsive */
+    @media (max-width:768px){
+      .surprise-frame { flex-direction:column; }
+      .surprise-frame img { width:100%; height:300px; }
+      .heart-divider { font-size:40px; }
+      .big-love-text { font-size:50px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating hearts -->
+  <div class="floating-hearts" id="hearts"></div>
+
+  <!-- Cover -->
+  <section id="cover" class="active">
+    <h1>Happy Girlfriend's Day, Shreya ❤️</h1>
+    <h3>In you, I found my forever.</h3>
+    <div class="polaroid">
+      <img src="assets/holding hand.jpg" alt="Us holding hands">
+      <div class="caption">Forever Yours ❤️</div>
+    </div>
+    <button class="start-button" onclick="startJourney()">Start Our Journey</button>
+  </section>
+
+  <!-- Album Page 1 -->
+  <section id="page1">
+    <h1>Our Beautiful Journey ❤️</h1>
+    <div class="album-page">
+      <div class="polaroid-small"><img src="assets/vc.jpg"><div class="caption-small">Every smile tells a story ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/pohtobooth.jpg"><div class="caption-small">Together, always.</div></div>
+      <div class="polaroid-small"><img src="assets/happyplace.jpg"><div class="caption-small">My happy place ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/kissoncheek.jpg"><div class="caption-small">You make life brighter.</div></div>
+      <div class="polaroid-small"><img src="assets/unforgetable.jpg"><div class="caption-small">Unforgettable moments ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/pyarkapunch.jpg"><div class="caption-small">Pyar ka Punch ❤️</div></div>
+    </div>
+    <div class="nav-buttons">
+      <button onclick="showPage('cover')">⬅ Back</button>
+      <button onclick="showPage('page2')">Next ➡</button>
+    </div>
+  </section>
+
+  <!-- Album Page 2 -->
+  <section id="page2">
+    <h1>Our Beautiful Journey ❤️</h1>
+    <div class="album-page">
+      <div class="polaroid-small"><img src="assets/watches.jpg"><div class="caption-small">Holding on forever.</div></div>
+      <div class="polaroid-small"><img src="assets/funtime.jpg"><div class="caption-small">Laughter & Love ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/purehappy.jpg"><div class="caption-small">Pure happiness.</div></div>
+      <div class="polaroid-small"><img src="assets/myeverything.jpg"><div class="caption-small">My everything ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/eyes.jpg"><div class="caption-small">Pretty eyesss❤️</div></div>
+      <div class="polaroid-small"><img src="assets/prommm.jpg"><div class="caption-small">Together Forever ❤️</div></div>
+      <div class="polaroid-small"><img src="assets/outfit.jpg"><div class="caption-small">Outfit checkkk ❤️</div></div>
+    </div>
+    <div class="nav-buttons">
+      <button onclick="showPage('page1')">⬅ Previous</button>
+      <button onclick="showPage('final')">Next ➡</button>
+    </div>
+  </section>
+
+  <!-- Surprise Page -->
+  <section id="final">
+    <h1>Forever & Always ❤️</h1>
+    <div class="surprise-frame" id="surprise-frame">
+      <img id="left-img" src="assets/cutieeeeeee.jpg">
+      <div class="heart-divider" id="magic-heart" onclick="revealImages()">❤️</div>
+      <img id="right-img" src="assets/me.jpg">
+    </div>
+    <div class="final-message">Click the heart to reveal our forever ❤️</div>
+    <div class="nav-buttons">
+      <button onclick="showPage('page2')">⬅ Previous</button>
+      <button onclick="showPage('loveletter')">Read My Letter ➡</button>
+    </div>
+  </section>
+
+  <!-- Love Letter Page -->
+  <section id="loveletter">
+    <h1>My Love Letter to You ❤️</h1>
+    <div class="envelope-container" id="envelope-container">
+      <div class="envelope" id="envelope">
+        <div class="flap"></div>
+      </div>
+      <p style="color:white; font-size:20px; margin-top:15px;">Click the envelope to open 💌</p>
+    </div>
+    <div class="love-letter" id="letter-text"></div>
+    <div class="nav-buttons">
+      <button onclick="showPage('final')">⬅ Back</button>
+    </div>
+  </section>
+
+  <!-- I LOVE YOU Page -->
+  <section id="iloveyou">
+    <div class="big-love-text" id="big-love-text">I LOVE YOU ❤️</div>
+    <button class="restart-button" id="restart-btn" onclick="showPage('cover'); stopMusic()">Restart Our Journey</button>
+  </section>
+
+  <!-- Background Music -->
+  <audio id="bg-music" loop>
+    <source src="assets/until_i_found_her_ring_composed.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    function startJourney(){
+      document.getElementById('bg-music').play();
+      showPage('page1');
+    }
+    function showPage(id){
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if(id === 'iloveyou'){ fadeInLove(); }
+    }
+    function stopMusic(){
+      const music = document.getElementById('bg-music');
+      music.pause();
+      music.currentTime = 0;
+    }
+    // Floating hearts
+    function createHeart(){ 
+      const heart = document.createElement('div'); 
+      heart.innerHTML = '❤'; 
+      heart.classList.add('heart'); 
+      heart.style.left = Math.random() * 100 + 'vw'; 
+      heart.style.fontSize = (20 + Math.random()*20) + 'px';
+      heart.style.animationDuration = (6 + Math.random() * 5) + 's'; 
+      document.getElementById('hearts').appendChild(heart); 
+      setTimeout(()=>heart.remove(),8000); 
+    }
+    setInterval(createHeart, 500);
+
+    // Magical heart reveal
+    function revealImages(){
+      const heart = document.getElementById('magic-heart');
+      heart.classList.add('pop');
+      heartBurst(heart);
+      sparkleBurst(heart);
+      setTimeout(() => document.getElementById('left-img').classList.add('visible'), 600);
+      setTimeout(() => document.getElementById('right-img').classList.add('visible'), 3200);
+    }
+
+    function heartBurst(heart){
+      const container = document.getElementById('surprise-frame');
+      for (let i = 0; i < 12; i++) {
+        const smallHeart = document.createElement('div');
+        smallHeart.classList.add('burst-heart');
+        smallHeart.innerHTML = '❤';
+        smallHeart.style.left = heart.offsetLeft + 30 + 'px';
+        smallHeart.style.top = heart.offsetTop + 'px';
+        const angle = (i / 12) * 2 * Math.PI;
+        const distance = 80 + Math.random()*40;
+        smallHeart.style.setProperty('--x', `${Math.cos(angle)*distance}px`);
+        smallHeart.style.setProperty('--y', `${Math.sin(angle)*distance}px`);
+        container.appendChild(smallHeart);
+        setTimeout(() => smallHeart.remove(), 1000);
+      }
+    }
+
+    function sparkleBurst(heart){
+      const container = document.getElementById('surprise-frame');
+      for (let i = 0; i < 20; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.style.left = heart.offsetLeft + 30 + 'px';
+        sparkle.style.top = heart.offsetTop + 'px';
+        const angle = (i / 20) * 2 * Math.PI;
+        const distance = 100 + Math.random()*50;
+        sparkle.style.setProperty('--x', `${Math.cos(angle)*distance}px`);
+        sparkle.style.setProperty('--y', `${Math.sin(angle)*distance}px`);
+        container.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1200);
+      }
+    }
+
+    // Envelope click to reveal letter
+    const envelope = document.getElementById('envelope');
+    const letterText = document.getElementById('letter-text');
+    const fullText = 
+      "My LOVE,\n\n" +
+      "From the moment you walked into my life, everything changed for the better. " +
+      "Every smile, every laugh, and every little moment with you has made my world more beautiful.\n\n" +
+      "You are my safe place, my happiest memory, and my greatest adventure.\n\n" +
+      "Thank you for being with me — for loving me the way you do, for supporting me, and for filling my days with endless joy. " +
+      "I promise to love you endlessly.\n\n" +
+      "Forever yours,\nYour Bubuuu ❤️";
+
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('open');
+      setTimeout(() => {
+        letterText.classList.add('visible');
+        typeWriterEffect(fullText, letterText, () => {
+          // After text finishes, wait 2s then go to I LOVE YOU page
+          setTimeout(()=> showPage('iloveyou'), 2000);
+        });
+      }, 800); 
+    });
+
+    function typeWriterEffect(text, element, callback) {
+      element.innerHTML = "";
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, 50);
+        } else if(callback) {
+          callback();
+        }
+      }
+      typing();
+    }
+
+    // Fade in I LOVE YOU text
+    function fadeInLove(){
+      const loveText = document.getElementById('big-love-text');
+      const restartBtn = document.getElementById('restart-btn');
+      setTimeout(()=> { loveText.classList.add('show'); }, 500);
+      setTimeout(()=> { restartBtn.style.display = 'block'; }, 3000);
+    }
+  </script>
+</body>
+</html>
